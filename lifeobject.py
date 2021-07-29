@@ -18,6 +18,19 @@ def loader():
         X = pickle.load(f)
     return X
 
+def nice_counter():
+    nice_counter = 0
+    try:
+        data = loader()
+        for i,a in enumerate(data):
+            for j,b in enumerate(data[a]):
+                if data[a][b] == True:
+                    nice_counter += 1
+        return nice_counter/(i+1)
+    except:
+        return 0
+
+
 def ButtonOnclick(event):
     dictionary = {}
     print("ButtonClicked")
@@ -51,6 +64,7 @@ def Saver():
 
 root = tkinter.Tk()
 s = ttk.Style(root).theme_use('clam')
+print(nice_counter())  #move it out already.
 #print(s.theme_names())
 
 tasks = ["Workout", "Skill learning", "One coffee only", "No bad habits", "Read", "Track monthly goals",
