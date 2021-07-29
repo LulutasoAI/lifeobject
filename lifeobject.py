@@ -3,9 +3,20 @@ from tkinter import ttk
 import datetime
 import os
 import pandas as pd
+import pickle
 
-d = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+d = datetime.datetime.now().strftime('%Y%m%d')
 
+def pickler(X):
+    filenameX = ("achievement.sav")
+    pickle.dump(X, open(filenameX, "wb"))
+
+#Utilities below.
+def loader():
+    filenameX = ("achievement.sav")
+    with open(filenameX, mode="rb") as f:
+        X = pickle.load(f)
+    return X
 
 def ButtonOnclick(event):
     dictionary = {}
@@ -14,9 +25,9 @@ def ButtonOnclick(event):
     global vs
     global df
     try:
-        df = pd.read_csv("achievement.csv")
+        data = loader()
     except:
-        df = pd.DataFrame()
+        data = {}
     count = 0
     for i, a in enumerate(vs):
 
@@ -27,11 +38,13 @@ def ButtonOnclick(event):
         else:
             dictionary[tasks[i]] = False
     print(count)
-    d = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    dfn = pd.DataFrame(dictionary,index=[d])
-    df = pd.concat([df,dfn],axis = 1)
-    df.to_csv("achievement.csv")
-    print(df)
+    d = datetime.datetime.now().strftime('%Y%m%d')
+    data[d] = dictionary
+    pickler(data)
+    #dfn = pd.DataFrame(dictionary,index=[d])
+    #df = pd.concat([df,dfn],axis = 1)
+    #df.to_csv("achievement.csv")
+    print(data)
 def Saver():
     #save some shit
     pass
@@ -43,12 +56,28 @@ s = ttk.Style(root).theme_use('clam')
 tasks = ["Workout", "Skill learning", "One coffee only", "No bad habits", "Read", "Track monthly goals",
         "Prepare next day", "Stick to routine", "Around motivated people", "Walk", "Podcast", "Meditate",
         "Journal", "Gratefulness", "Record win"]
-
+#tasks = ["1","2"]
 #It seems like that this must be below root = tkinter.Tk().
 v = tkinter.BooleanVar()
 vs = []
+
 for a in tasks:
     vs.append(tkinter.BooleanVar())
+try:
+    data = loader()
+except:
+    data = {}
+print(data)
+d = datetime.datetime.now().strftime('%Y%m%d')
+
+try:
+    for i, dt in enumerate(data[d]):
+        if data[d][dt] == True:
+            vs[i].set(True)
+        else:
+            vs[i].set(False)
+except:
+    print("First save today")
 
 
 root.title("Software Title")
