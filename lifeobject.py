@@ -7,16 +7,31 @@ import pickle
 
 d = datetime.datetime.now().strftime('%Y%m%d')
 
-def pickler(X):
-    filenameX = ("achievement.sav")
-    pickle.dump(X, open(filenameX, "wb"))
+def pickler(X,intent):
+    if intent == "achievement":
+        filenameX = ("achievement.sav")
+        pickle.dump(X, open(filenameX, "wb"))
+    elif intent == "objective":
+        filenameX = ("objective.sav")
+        pickle.dump(X, open(filenameX, "wb"))
+    else:
+        print("Your order is wrong")
 
 #Utilities below.
-def loader():
-    filenameX = ("achievement.sav")
-    with open(filenameX, mode="rb") as f:
-        X = pickle.load(f)
-    return X
+def loader(intent):
+    if intent == "achievement":
+        filenameX = ("achievement.sav")
+        with open(filenameX, mode="rb") as f:
+            X = pickle.load(f)
+        return X
+
+    elif intent == "objective":
+        filename = ("objective.sav")
+        with open(filename, mode="rb") as f:
+            X = pickle.load(f)
+        return X
+    else:
+        print("Your order is wrong.")
 
 def nice_counter():
     nice_counter = 0
@@ -30,15 +45,24 @@ def nice_counter():
     except:
         return 0
 
+def getTextInput():
+    d = datetime.datetime.now().strftime('%Y%m%d')
+    try:
+        objective = loader("objective")
+    except:
+        objective = {}
+
+    result=textExample.get("1.0","end")
+    objective[d] = result
+    pickler(objective,"objective")
 
 def ButtonOnclick(event):
     dictionary = {}
     print("ButtonClicked")
     global tasks
     global vs
-    global df
     try:
-        data = loader()
+        data = loader("achievement")
     except:
         data = {}
     count = 0
@@ -53,7 +77,7 @@ def ButtonOnclick(event):
     print(count)
     d = datetime.datetime.now().strftime('%Y%m%d')
     data[d] = dictionary
-    pickler(data)
+    pickler(data,"achievement")
     #dfn = pd.DataFrame(dictionary,index=[d])
     #df = pd.concat([df,dfn],axis = 1)
     #df.to_csv("achievement.csv")
@@ -78,7 +102,7 @@ vs = []
 for a in tasks:
     vs.append(tkinter.BooleanVar())
 try:
-    data = loader()
+    data = loader("achievement")
 except:
     data = {}
 print(data)
@@ -96,8 +120,19 @@ except:
 
 root.title("Software Title")
 root.geometry("800x600")
+######################################################################
+try:
+    objective = loader("objective")
+    goal = tkinter.Label(text = "Today's goal : {}".format(objective[d]))
+    goal.pack()
+except:
+    textExample=tkinter.Text(root, height=3)
+    textExample.pack()
+    btnRead=tkinter.Button(root, height=1, width=20, text="Save your daily goal",
+                        command=getTextInput)
 
-
+    btnRead.pack()
+####################################################################
 txt1 = tkinter.Label(text =u"test")
 
 txt1.pack()
